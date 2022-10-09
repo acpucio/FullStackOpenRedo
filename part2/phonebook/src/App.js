@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import Person from './components/Person'
+import personService from './services/persons'
+
 
 const PersonForm = ({ onSubmit, newName, newNumber, handleNameChange,handleNumberChange }) => {
-    
+  console.log('this works')  
   return(
   <form onSubmit={onSubmit}>
     <div>
@@ -28,17 +30,31 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
+    personService
+      .getAll()
+      .then(initialPersons => {
       console.log('promise fulfillled')
-      setPersons(response.data)
+      setPersons(initialPersons)
       })
   },[])
 
-  console.log('render', persons.length, 'persons')
+  
+  console.log('persons', persons.length, 'length')
 
+  const deletePerson = id => {
 
+    const person = persons.find(n => n.id ===id)
+
+    if(window.confirm(`Delete ${person.name}?`)){
+      personService
+      .deletePerson(id)
+      .then((response) =>{
+        const updatedPersons = persons.filter(n => n.id !== id)
+        setPersons(updatedPersons);
+      })
+      
+    }
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -55,7 +71,14 @@ const App = () => {
     if (duplicateFound) {
       alert(`${personObject.name} is already added to phone book`)
     } else {
-      setPersons(persons.concat(personObject))
+      
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+        })
+
+      
     }
     setNewName('')
     setNewNumber('')
@@ -90,9 +113,13 @@ const App = () => {
       <h2>Numbers</h2>
       <ul style={{ listStyleType: "none", paddingLeft: 0 }} >
         {persons.map(person =>
-          <li key={person.id}>
-            {person.name} {person.number}
-          </li>)}
+          <Person
+            personId={person.id}
+            name = {person.name} 
+            number = {person.number}
+            deletePerson={() => deletePerson(person.id)}
+          />
+        )}
       </ul>
 
     </div>
