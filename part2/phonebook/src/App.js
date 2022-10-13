@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Person from './components/Person'
 import personService from './services/persons'
+import './index.css'
 
 
 const PersonForm = ({ onSubmit, newName, newNumber, handleNameChange,handleNumberChange }) => {
@@ -8,6 +9,7 @@ const PersonForm = ({ onSubmit, newName, newNumber, handleNameChange,handleNumbe
   return(
   <form onSubmit={onSubmit}>
     <div>
+      <h2>add a new</h2>
       name: <input
         value={newName}
         onChange={handleNameChange} />
@@ -27,6 +29,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [someMessage,setSomeMessage] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -75,6 +78,12 @@ const App = () => {
       personService
         .create(personObject)
         .then(returnedPerson => {
+          setSomeMessage(
+            `Added ${personObject.name}`
+          )
+          setTimeout(()=>{
+            setSomeMessage(null)
+          }, 5000)
           setPersons(persons.concat(returnedPerson))
         })
 
@@ -82,6 +91,18 @@ const App = () => {
     }
     setNewName('')
     setNewNumber('')
+  }
+
+  const Notification = ({message}) => {
+    if(message === null) {
+      return null
+    }
+
+    return(
+      <div className='notification'>
+        {message}
+      </div>
+    )
   }
 
   const handleNameChange = (event) => {
@@ -100,6 +121,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={someMessage} />
 
       <PersonForm
         onSubmit={addPerson}
