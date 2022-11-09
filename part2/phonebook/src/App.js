@@ -86,6 +86,10 @@ const App = () => {
           }, 5000)
           setPersons(persons.concat(returnedPerson))
         })
+        .catch(error => {
+          // this is the way to access the error message
+          console.log('****',error.response.data.error)
+        })
 
       
     }
