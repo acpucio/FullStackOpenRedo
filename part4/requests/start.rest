@@ -3,9 +3,9 @@ content-type: application/json
 
 {
     "title": "sample",
-    "author": "Albert",
+    "author": "Alberts",
     "url": "albert.com",
-    "likes": 5
+    "likes": 6
 }
 
 ###
